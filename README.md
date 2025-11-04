@@ -1,9 +1,9 @@
 # ipv4-subnet-calculator
 
-input: 
+input:  
 {IP}/{MASK}
 
-output:
+output:  
 Network         
 Broadcast       
 First host      
