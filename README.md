@@ -1,7 +1,7 @@
 # ipv4-subnet-calculator
 
 input: 
-<IP>/<MASK>
+{IP}/{MASK}
 
 output:
 Network         
