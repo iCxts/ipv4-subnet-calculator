@@ -1,5 +1,9 @@
 #============================== HELPERR ==============================
 
+def bitshiftleft(integer, shift): return integer * (2 ** shift)
+
+def bitshiftright(integer, shift): return integer // (2 ** shift)
+
 def split_ip_mask(string):
     index_ip = 0
     for letters in string:
@@ -8,21 +12,19 @@ def split_ip_mask(string):
     return string[:index_ip], string[index_ip + 1:]
 
 def split_ip(ip):
+    count = 0
+    for char in ip:
+        if char == '.':
+            count += 1
+    if count != 3: return "", "", "", ""
     dot_index = []
     for index in range(len(ip)): 
         if ip[index] == ".": dot_index.append(index)
     return ip[:dot_index[0]], ip[dot_index[0] + 1:dot_index[1]], ip[dot_index[1] + 1:dot_index[2]], ip[dot_index[2] + 1:]
 
-def is_between_0_255(value):
-    if value >= 0 and value <=255: return True
-    else: return False
+def is_between_0_255(value): return True if value >= 0 and value <= 255 else False
 
-def is_int_convertable(string):
-    try:
-        int(string)
-        return True
-    except ValueError:
-        return False
+def is_int_convertable(string): return string.isdigit()
 
 def is_correct_format(ip, mask):
     octet1, octet2, octet3, octet4 = split_ip(ip)
@@ -35,18 +37,15 @@ def is_correct_format(ip, mask):
     if mask > 32 or mask < 0: return False 
     return True
 
-def to_u32(octet1, octet2, octet3, octet4): #convert o1, o2, o3, o4 to u32
-    return octet1 << 24 | octet2 << 16 | octet3 << 8 | octet4
+#convert octet to u32
+def to_u32(octet1, octet2, octet3, octet4): return bitshiftleft(octet1, 24) | bitshiftleft(octet2, 16) | bitshiftleft(octet3, 8)| octet4 
     
-def from_u32(u32_integer): #convert to_u32 but reverse
-    return (u32_integer >> 24) & 255, (u32_integer >> 16) & 255, (u32_integer >> 8) & 255, (u32_integer) & 255
+#convert u32 to octet 
+def from_u32(u32_integer): return bitshiftright(u32_integer, 24) & 255, bitshiftright(u32_integer, 16) & 255, bitshiftright(u32_integer, 8) & 255, (u32_integer) & 255
 
-def to_dotted_format(octet_tuple):
-    return f"{octet_tuple[0]}.{octet_tuple[1]}.{octet_tuple[2]}.{octet_tuple[3]}"
+def to_dotted_format(octet_tuple): return f"{octet_tuple[0]}.{octet_tuple[1]}.{octet_tuple[2]}.{octet_tuple[3]}"
 
-def to_mask32(mask):
-    return ((1 << mask) - 1) << (32 - mask)
-
+def to_mask32(mask): return bitshiftleft(bitshiftleft(1, mask) - 1, (32 - mask))
 
 #============================= CALC ==============================
 
