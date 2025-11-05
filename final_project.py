@@ -1,8 +1,10 @@
-#============================== HELPERR ==============================
+#============================== HELPER ==============================
 
-def bitshiftleft(integer, shift): return integer * (2 ** shift)
+def bitshiftleft(integer, shift):
+    return integer * (2 ** shift)
 
-def bitshiftright(integer, shift): return integer // (2 ** shift)
+def bitshiftright(integer, shift):
+    return integer // (2 ** shift)
 
 def split_ip_mask(string):
     index_ip = 0
@@ -20,32 +22,70 @@ def split_ip(ip):
     dot_index = []
     for index in range(len(ip)): 
         if ip[index] == ".": dot_index.append(index)
-    return ip[:dot_index[0]], ip[dot_index[0] + 1:dot_index[1]], ip[dot_index[1] + 1:dot_index[2]], ip[dot_index[2] + 1:]
+    return (
+        ip[:dot_index[0]],
+        ip[dot_index[0] + 1:dot_index[1]],
+        ip[dot_index[1] + 1:dot_index[2]],
+        ip[dot_index[2] + 1:]
+    )
 
-def is_between_0_255(value): return True if value >= 0 and value <= 255 else False
+def is_between_0_255(value):
+    return True if value >= 0 and value <= 255 else False
 
-def is_int_convertable(string): return string.isdigit()
+def is_int_convertable(string): 
+    return string.isdigit()
 
 def is_correct_format(ip, mask):
     octet1, octet2, octet3, octet4 = split_ip(ip)
-    if not (is_int_convertable(octet1) and is_int_convertable(octet2) and is_int_convertable(octet3) and is_int_convertable(octet4)): return False
-    octet1, octet2, octet3, octet4 = int(octet1), int(octet2), int(octet3), int(octet4)
-    if not (is_between_0_255(octet1) and is_between_0_255(octet2) and is_between_0_255(octet3) and is_between_0_255(octet4)): return False
+    if not (is_int_convertable(octet1) 
+            and is_int_convertable(octet2) 
+            and is_int_convertable(octet3) 
+            and is_int_convertable(octet4)): 
+        return False
+    octet1, octet2, octet3, octet4 = (
+            int(octet1),
+            int(octet2),
+            int(octet3),
+            int(octet4))
+    if not ((is_between_0_255(octet1)
+             and is_between_0_255(octet2)
+             and is_between_0_255(octet3)
+             and is_between_0_255(octet4))):
+        return False
 
-    if is_int_convertable(mask) == False : return False
+    if is_int_convertable(mask) == False: return False
     mask = int(mask)
     if mask > 32 or mask < 0: return False 
     return True
 
 #convert octet to u32
-def to_u32(octet1, octet2, octet3, octet4): return bitshiftleft(octet1, 24) | bitshiftleft(octet2, 16) | bitshiftleft(octet3, 8)| octet4 
-    
+def to_u32(octet1, octet2, octet3, octet4): 
+    return(
+        bitshiftleft(octet1, 24) 
+        | bitshiftleft(octet2, 16)
+        | bitshiftleft(octet3, 8)
+        | octet4
+    )
+ 
 #convert u32 to octet 
-def from_u32(u32_integer): return bitshiftright(u32_integer, 24) & 255, bitshiftright(u32_integer, 16) & 255, bitshiftright(u32_integer, 8) & 255, (u32_integer) & 255
+def from_u32(u32_integer):
+    return (
+        bitshiftright(u32_integer, 24) & 255,
+        bitshiftright(u32_integer, 16) & 255,
+        bitshiftright(u32_integer, 8) & 255,
+        (u32_integer) & 255
+    )
 
-def to_dotted_format(octet_tuple): return f"{octet_tuple[0]}.{octet_tuple[1]}.{octet_tuple[2]}.{octet_tuple[3]}"
+def to_dotted_format(octet_tuple): 
+    return (
+    f"{octet_tuple[0]}."
+    f"{octet_tuple[1]}."
+    f"{octet_tuple[2]}."
+    f"{octet_tuple[3]}"
+    )
 
-def to_mask32(mask): return bitshiftleft(bitshiftleft(1, mask) - 1, (32 - mask))
+def to_mask32(mask):
+    return bitshiftleft(bitshiftleft(1, mask) - 1, (32 - mask))
 
 #============================= CALC ==============================
 
@@ -100,61 +140,82 @@ def ip_scope(octet1, octet2):
 
 #=============================== MAIN ===============================
 
-print('''
+def main():
+    print('''
+    
+    ██╗██████╗░██╗░░░██╗░░██╗██╗  ░██████╗██╗░░░██╗██████╗░███╗░░██╗███████╗████████╗
+    ██║██╔══██╗██║░░░██║░██╔╝██║  ██╔════╝██║░░░██║██╔══██╗████╗░██║██╔════╝╚══██╔══╝
+    ██║██████╔╝╚██╗░██╔╝██╔╝░██║  ╚█████╗░██║░░░██║██████╦╝██╔██╗██║█████╗░░░░░██║░░░
+    ██║██╔═══╝░░╚████╔╝░███████║  ░╚═══██╗██║░░░██║██╔══██╗██║╚████║██╔══╝░░░░░██║░░░
+    ██║██║░░░░░░░╚██╔╝░░╚════██║  ██████╔╝╚██████╔╝██████╦╝██║░╚███║███████╗░░░██║░░░
+    ╚═╝╚═╝░░░░░░░░╚═╝░░░░░░░░╚═╝  ╚═════╝░░╚═════╝░╚═════╝░╚═╝░░╚══╝╚══════╝░░░╚═╝░░░
+    
+    ░█████╗░░█████╗░██╗░░░░░░█████╗░██╗░░░██╗██╗░░░░░░█████╗░████████╗░█████╗░██████╗░
+    ██╔══██╗██╔══██╗██║░░░░░██╔══██╗██║░░░██║██║░░░░░██╔══██╗╚══██╔══╝██╔══██╗██╔══██╗
+    ██║░░╚═╝███████║██║░░░░░██║░░╚═╝██║░░░██║██║░░░░░███████║░░░██║░░░██║░░██║██████╔╝
+    ██║░░██╗██╔══██║██║░░░░░██║░░██╗██║░░░██║██║░░░░░██╔══██║░░░██║░░░██║░░██║██╔══██╗
+    ╚█████╔╝██║░░██║███████╗╚█████╔╝╚██████╔╝███████╗██║░░██║░░░██║░░░╚█████╔╝██║░░██║
+    ░╚════╝░╚═╝░░╚═╝╚══════╝░╚════╝░░╚═════╝░╚══════╝╚═╝░░╚═╝░░░╚═╝░░░░╚════╝░╚═╝░░╚═╝o
+    
+      ''')
+    print("Input IP Address in CIDR Format : <IP>/<MASK>")
+    ip_mask = input("> ")
+    
+    ip, mask = split_ip_mask(ip_mask)
+    if is_correct_format(ip, mask):
+        octet1, octet2, octet3, octet4 = map(int, split_ip(ip))
+        mask = int(mask)
+    
+        ip32 = to_u32(octet1, octet2, octet3, octet4)
+        mask32 = to_mask32(mask)
+    
+        netmask_var = to_dotted_format(from_u32(netmask(mask32)))
+        wildcard_var = to_dotted_format(from_u32(wildcard(mask32)))
+        network_var = (
+            f"{to_dotted_format(from_u32(network(ip32, mask32)))}/"
+            f"{mask}"
+        )
+        broadcast_var = to_dotted_format(from_u32(broadcast(ip32, mask32)))
+        first_host_var = to_dotted_format(
+            from_u32(first_host(ip32, mask32, mask))
+        )
+        last_host_var = to_dotted_format(
+            from_u32(last_host(ip32, mask32, mask))
+        )
+        total_address_var = total_address(mask)
+        usable_host_var = usable_host(mask)
+        class_scope_var = f"{ip_class(octet1)} / {ip_scope(octet1, octet2)}"
+        binary_ip_var = to_dotted_format(
+            (
+                f"{octet1:08b}",
+                f"{octet2:08b}",
+                f"{octet3:08b}",
+                f"{octet4:08b}",
+            )
+        )
+        binary_mask_var = to_dotted_format(
+            (
+                f"{from_u32(mask32)[0]:08b}",
+                f"{from_u32(mask32)[1]:08b}",
+                f"{from_u32(mask32)[2]:08b}",
+                f"{from_u32(mask32)[3]:08b}",
+            )
+        )
 
-██╗██████╗░██╗░░░██╗░░██╗██╗  ░██████╗██╗░░░██╗██████╗░███╗░░██╗███████╗████████╗
-██║██╔══██╗██║░░░██║░██╔╝██║  ██╔════╝██║░░░██║██╔══██╗████╗░██║██╔════╝╚══██╔══╝
-██║██████╔╝╚██╗░██╔╝██╔╝░██║  ╚█████╗░██║░░░██║██████╦╝██╔██╗██║█████╗░░░░░██║░░░
-██║██╔═══╝░░╚████╔╝░███████║  ░╚═══██╗██║░░░██║██╔══██╗██║╚████║██╔══╝░░░░░██║░░░
-██║██║░░░░░░░╚██╔╝░░╚════██║  ██████╔╝╚██████╔╝██████╦╝██║░╚███║███████╗░░░██║░░░
-╚═╝╚═╝░░░░░░░░╚═╝░░░░░░░░╚═╝  ╚═════╝░░╚═════╝░╚═════╝░╚═╝░░╚══╝╚══════╝░░░╚═╝░░░
+        print(f'''
+    Network         : {network_var}
+    Broadcast       : {broadcast_var}
+    First host      : {first_host_var}
+    Last host       : {last_host_var}
+    Total addresses : {total_address_var}
+    Usable hosts    : {usable_host_var}
+    Netmask         : {netmask_var}
+    Wildcard        : {wildcard_var}
+    Class / Scope   : {class_scope_var}
+    Binary (IP)     : {binary_ip_var}
+    Binary (Mask)   : {binary_mask_var}
+    ''')
+    else: print("Incorrect Format!")
 
-░█████╗░░█████╗░██╗░░░░░░█████╗░██╗░░░██╗██╗░░░░░░█████╗░████████╗░█████╗░██████╗░
-██╔══██╗██╔══██╗██║░░░░░██╔══██╗██║░░░██║██║░░░░░██╔══██╗╚══██╔══╝██╔══██╗██╔══██╗
-██║░░╚═╝███████║██║░░░░░██║░░╚═╝██║░░░██║██║░░░░░███████║░░░██║░░░██║░░██║██████╔╝
-██║░░██╗██╔══██║██║░░░░░██║░░██╗██║░░░██║██║░░░░░██╔══██║░░░██║░░░██║░░██║██╔══██╗
-╚█████╔╝██║░░██║███████╗╚█████╔╝╚██████╔╝███████╗██║░░██║░░░██║░░░╚█████╔╝██║░░██║
-░╚════╝░╚═╝░░╚═╝╚══════╝░╚════╝░░╚═════╝░╚══════╝╚═╝░░╚═╝░░░╚═╝░░░░╚════╝░╚═╝░░╚═╝o
-
-  ''')
-print("Input IP Address in CIDR Format : <IP>/<MASK>")
-ip_mask = input("> ")
-
-ip, mask = split_ip_mask(ip_mask)
-if is_correct_format(ip, mask):
-    octet1, octet2, octet3, octet4 = map(int, split_ip(ip))
-    mask = int(mask)
-    ip32 = to_u32(octet1, octet2, octet3, octet4)
-    mask32 = to_mask32(mask)
-
-    netmask_var = to_dotted_format(from_u32(netmask(mask32)))
-    wildcard_var = to_dotted_format(from_u32(wildcard(mask32)))
-    network_var = f"{to_dotted_format(from_u32(network(ip32, mask32)))}/{mask}"
-    broadcast_var = f"{to_dotted_format(from_u32(broadcast(ip32, mask32)))}"
-    first_host_var = to_dotted_format(from_u32(first_host(ip32, mask32, mask)))
-    last_host_var = to_dotted_format(from_u32(last_host(ip32, mask32, mask)))
-    total_address_var = total_address(mask)
-    usabel_host_var = usable_host(mask)
-    class_scope_var = f"{ip_class(octet1)} / {ip_scope(octet1, octet2)}"
-    binary_ip_var = to_dotted_format((f'{octet1:08b}', f'{octet2:08b}', f'{octet3:08b}', f'{octet4:08b}'))
-    binary_mask_var = to_dotted_format((f'{from_u32(mask32)[0]:08b}', f'{from_u32(mask32)[1]:08b}', f'{from_u32(mask32)[2]:08b}', f'{from_u32(mask32)[3]:08b}'))
-       
-    print(f'''
-Network         : {network_var}
-Broadcast       : {broadcast_var}
-First host      : {first_host_var}
-Last host       : {last_host_var}
-Total addresses : {total_address_var}
-Usable hosts    : {usabel_host_var}
-Netmask         : {netmask_var}
-Wildcard        : {wildcard_var}
-Class / Scope   : {class_scope_var}
-Binary (IP)     : {binary_ip_var}
-Binary (Mask)   : {binary_mask_var}
-''')
-else: print("Incorrect Format!")
-
-
-
-
-
+if __name__ == "__main__":
+    main()
