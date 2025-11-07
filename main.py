@@ -1,24 +1,25 @@
 #============================== HELPER ==============================
 
-def bitshiftleft(integer, shift):
+def bitshiftleft(integer: int, shift: int) -> int:
     return integer * (2 ** shift)
 
-def bitshiftright(integer, shift):
+def bitshiftright(integer :int, shift: int) -> int:
     return integer // (2 ** shift)
 
-def split_ip_mask(string):
+def split_ip_mask(string: str) -> tuple:
     index_ip = 0
     for letters in string:
         if letters != "/": index_ip += 1
         elif letters == "/": break
     return string[:index_ip], string[index_ip + 1:]
 
-def split_ip(ip):
+def split_ip(ip: str) -> tuple:
     count = 0
     for char in ip:
         if char == '.':
             count += 1
-    if count != 3: return "", "", "", ""
+    if count != 3:
+        return "", "", "", ""
     dot_index = []
     for index in range(len(ip)): 
         if ip[index] == ".": dot_index.append(index)
@@ -29,13 +30,13 @@ def split_ip(ip):
         ip[dot_index[2] + 1:]
     )
 
-def is_between_0_255(value):
+def is_between_0_255(value: int) -> bool:
     return True if value >= 0 and value <= 255 else False
 
-def is_int_convertable(string): 
+def is_int_convertable(string: str) -> bool: 
     return string.isdigit()
 
-def is_correct_format(ip, mask):
+def is_correct_format(ip : str, mask: int) -> bool:
     octet1, octet2, octet3, octet4 = split_ip(ip)
     if not (is_int_convertable(octet1) 
             and is_int_convertable(octet2) 
@@ -53,13 +54,15 @@ def is_correct_format(ip, mask):
              and is_between_0_255(octet4))):
         return False
 
-    if is_int_convertable(mask) == False: return False
+    if is_int_convertable(mask) == False:
+        return False
     mask = int(mask)
-    if mask > 32 or mask < 0: return False 
+    if mask > 32 or mask < 0:
+        return False 
     return True
 
 #convert octet to u32
-def to_u32(octet1, octet2, octet3, octet4): 
+def to_u32(octet1: int, octet2: int, octet3: int, octet4: int) -> int: 
     return(
         bitshiftleft(octet1, 24) 
         | bitshiftleft(octet2, 16)
@@ -68,7 +71,7 @@ def to_u32(octet1, octet2, octet3, octet4):
     )
  
 #convert u32 to octet 
-def from_u32(u32_integer):
+def from_u32(u32_integer: int) -> tuple:
     return (
         bitshiftright(u32_integer, 24) & 255,
         bitshiftright(u32_integer, 16) & 255,
@@ -76,7 +79,7 @@ def from_u32(u32_integer):
         (u32_integer) & 255
     )
 
-def to_dotted_format(octet_tuple): 
+def to_dotted_format(octet_tuple: tuple) -> str: 
     return (
     f"{octet_tuple[0]}."
     f"{octet_tuple[1]}."
@@ -84,58 +87,78 @@ def to_dotted_format(octet_tuple):
     f"{octet_tuple[3]}"
     )
 
-def to_mask32(mask):
+def to_mask32(mask: int) -> int:
     return bitshiftleft(bitshiftleft(1, mask) - 1, (32 - mask))
 
 #============================= CALC ==============================
 
-def netmask(mask32):
+def netmask(mask32: int) -> int:
     return mask32
 
-def wildcard(mask32):
+def wildcard(mask32: int) -> int:
     return ~mask32
 
-def network(ip32, mask32):
+def network(ip32: int, mask32: int) -> int:
     return ip32 & mask32
 
-def broadcast(ip32, mask32):
+def broadcast(ip32: int, mask32: int) -> int:
     return ip32 | ~mask32
 
-def first_host(ip32, mask32, mask):
-    if mask == 31 or mask == 32: return network(ip32, mask32)
-    else: return network(ip32, mask32) + 1
+def first_host(ip32: int, mask32: int, mask: int) -> int:
+    if mask == 31 or mask == 32:
+        return network(ip32, mask32)
+    else:
+        return network(ip32, mask32) + 1
 
-def last_host(ip32, mask32, mask):
-    if mask == 32: return network(ip32, mask32)
-    if mask == 31: return broadcast(ip32, mask32)
-    else: return broadcast(ip32, mask32) - 1
+def last_host(ip32: int, mask32: int, mask: int) -> int:
+    if mask == 32:
+        return network(ip32, mask32)
+    if mask == 31: 
+        return broadcast(ip32, mask32)
+    else: 
+        return broadcast(ip32, mask32) - 1
 
-def total_address(mask):
-    if mask == 32: return 1
-    if mask == 31: return 2
+def total_address(mask: int) -> int:
+    if mask == 32:
+        return 1
+    if mask == 31:
+        return 2
     return 2 ** (32 - mask)
 
 
-def usable_host(mask):
-    if mask == 32: return 1
-    if mask == 31: return 2
+def usable_host(mask: int) -> int:
+    if mask == 32:
+        return 1
+    if mask == 31:
+        return 2
     return total_address(mask) -2
 
-def ip_class(octet1):
-    if 0 <= octet1 <= 127: return 'A'
-    if 128 <= octet1 <= 191: return 'B'
-    if 192 <= octet1 <= 223: return 'C'
-    if 224 <= octet1 <= 239: return 'D'  
+def ip_class(octet1: int) -> str:
+    if 0 <= octet1 <= 127:
+        return 'A'
+    if 128 <= octet1 <= 191:
+        return 'B'
+    if 192 <= octet1 <= 223:
+        return 'C'
+    if 224 <= octet1 <= 239: 
+        return 'D'  
     return 'E'  
 
-def ip_scope(octet1, octet2):
-    if octet1 == 10: return "Private"   
-    if octet1 == 172 and 16 <= octet2 <= 31: return "Private"
-    if octet1 == 192 and octet2 == 168: return "Private"
-    if octet1 == 127: return "Loopback"
-    if octet1 == 169 and octet2 == 254: return "Link-local"
-    if 224 <= octet1 <= 239: return "Multicast"
-    if 240 <= octet1 <= 255: return "Reserved"
+def ip_scope(octet1: int, octet2: int) -> str:
+    if octet1 == 10:
+        return "Private"   
+    if octet1 == 172 and 16 <= octet2 <= 31:
+        return "Private"
+    if octet1 == 192 and octet2 == 168:
+        return "Private"
+    if octet1 == 127:   
+        return "Loopback"
+    if octet1 == 169 and octet2 == 254:
+        return "Link-local"
+    if 224 <= octet1 <= 239:
+        return "Multicast"
+    if 240 <= octet1 <= 255:
+        return "Reserved"
     return "Public"
 
 #=============================== MAIN ===============================
@@ -215,7 +238,8 @@ def main():
     Binary (IP)     : {binary_ip_var}
     Binary (Mask)   : {binary_mask_var}
     ''')
-    else: print("Incorrect Format!")
+    else:
+        print("Incorrect Format!")
 
 if __name__ == "__main__":
     main()
